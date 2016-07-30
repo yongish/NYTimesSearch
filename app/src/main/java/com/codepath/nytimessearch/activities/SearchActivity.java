@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,7 +25,13 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
@@ -36,6 +43,10 @@ public class SearchActivity extends AppCompatActivity {
 
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
+
+    String begin_date;
+    String sort;
+    Set<String> news_desk;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +79,8 @@ public class SearchActivity extends AppCompatActivity {
                 startActivity(i);
             }
         });
+
+        news_desk = new HashSet<>();
     }
 
     @Override
@@ -102,7 +115,17 @@ public class SearchActivity extends AppCompatActivity {
         RequestParams params = new RequestParams();
         params.put("api-key", "034ea0fa1f7942099700467445e5c69f");
         params.put("page", 0);
-        params.put("q", query);
+        if (query.length() > 0) params.put("q", query);
+        if (begin_date != null) {
+            params.put("begin_date", begin_date);
+        }
+        if (sort != null) {
+            params.put("sort", sort);
+        }
+        if (news_desk != null && !news_desk.isEmpty()) {
+            String nd = TextUtils.join("%20", news_desk);
+            params.put("fq", "news_desk:(" + nd + ")");
+        }
 
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -127,4 +150,30 @@ public class SearchActivity extends AppCompatActivity {
         startActivityForResult(i, REQUEST_CODE);
         return true;
     }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
+            begin_date = convertDateFormat(data.getExtras().getString("begin"));
+            sort = data.getExtras().getString("sort");
+
+            if (data.getExtras().getBoolean("arts")) news_desk.add("\"arts\"");
+            if (data.getExtras().getBoolean("fashion")) news_desk.add("\"fashion\"");
+            if (data.getExtras().getBoolean("sports")) news_desk.add("\"sports\"");
+        }
+    }
+
+    public String convertDateFormat(String d) {
+        DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+        SimpleDateFormat formatter = new SimpleDateFormat("yyyyMMdd");
+        String newDateString = "";
+        try {
+            Date date = df.parse(d);
+            newDateString = formatter.format(date);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        return newDateString;
+    }
+
 }
