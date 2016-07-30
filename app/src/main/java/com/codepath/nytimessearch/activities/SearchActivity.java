@@ -120,4 +120,11 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
     }
+
+    private final int REQUEST_CODE = 20;
+    public boolean openSettings(MenuItem item) {
+        Intent i = new Intent(SearchActivity.this, SettingsActivity.class);
+        startActivityForResult(i, REQUEST_CODE);
+        return true;
+    }
 }
