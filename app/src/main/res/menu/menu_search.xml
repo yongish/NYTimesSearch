@@ -12,6 +12,11 @@
         android:icon="@drawable/ic_filter"
         app:showAsAction="ifRoom"
         android:onClick="openSettings"
-        android:title="Filter">
-    </item>
+        android:title="Filter" />
+    <item
+        android:id="@+id/action_search"
+        android:title="Search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>
