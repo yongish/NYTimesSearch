@@ -16,6 +16,7 @@ import android.widget.GridView;
 
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
+import com.codepath.nytimessearch.EndlessScrollListener;
 import com.codepath.nytimessearch.R;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -48,6 +49,10 @@ public class SearchActivity extends AppCompatActivity {
     String sort;
     Set<String> news_desk;
 
+    AsyncHttpClient client;
+    String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
+    RequestParams params;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,11 +63,13 @@ public class SearchActivity extends AppCompatActivity {
     }
 
     public void setupViews() {
+        client = new AsyncHttpClient();
         etQuery = (EditText) findViewById(R.id.etQuery);
         gvResults = (GridView) findViewById(R.id.gvResults);
         btnSearch = (Button) findViewById(R.id.btnSearch);
         articles = new ArrayList<>();
         adapter = new ArticleArrayAdapter(this, articles);
+        news_desk = new HashSet<>();
         gvResults.setAdapter(adapter);
 
         // hook up listener for grid click
@@ -80,7 +87,37 @@ public class SearchActivity extends AppCompatActivity {
             }
         });
 
-        news_desk = new HashSet<>();
+        gvResults.setOnScrollListener(new EndlessScrollListener() {
+            @Override
+            public boolean onLoadMore(int page, int totalItemsCount) {
+                customLoadMoreDataFromApi(page);
+                return true;
+            }
+        });
+    }
+
+    // Append more data into the adapter
+    public void customLoadMoreDataFromApi(int offset) {
+        // This method probably sends out a network request and appends new data items to your adapter.
+        // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
+        // Deserialize API response and then construct new objects to append to the adapter
+
+        params.add("page", String.valueOf(offset));
+        client.get(url, params, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                Log.d("DEBUG", response.toString());
+                JSONArray articleJsonResults = null;
+
+                try {
+                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                    Log.d("DEBUG", articleJsonResults.toString());
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
     }
 
     @Override
@@ -109,10 +146,8 @@ public class SearchActivity extends AppCompatActivity {
         String query = etQuery.getText().toString();
 
 //        Toast.makeText(this, "Searching for" + query, Toast.LENGTH_LONG).show();
-        AsyncHttpClient client = new AsyncHttpClient();
-        String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
 
-        RequestParams params = new RequestParams();
+        params = new RequestParams();
         params.put("api-key", "034ea0fa1f7942099700467445e5c69f");
         params.put("page", 0);
         if (query.length() > 0) params.put("q", query);
@@ -127,21 +162,7 @@ public class SearchActivity extends AppCompatActivity {
             params.put("fq", "news_desk:(" + nd + ")");
         }
 
-        client.get(url, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
-                JSONArray articleJsonResults = null;
-
-                try {
-                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
-                    Log.d("DEBUG", articleJsonResults.toString());
-                } catch (JSONException e) {
-                   e.printStackTrace();
-                }
-            }
-        });
+        customLoadMoreDataFromApi(0);
     }
 
     private final int REQUEST_CODE = 20;

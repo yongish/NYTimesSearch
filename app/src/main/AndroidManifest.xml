@@ -27,10 +27,6 @@
             android:name=".activities.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme" />
-        <activity
-            android:name=".activities.DateActivity"
-            android:label="@string/title_activity_date"
-            android:theme="@style/AppTheme"></activity>
     </application>
 
 </manifest>
