@@ -1,4 +1,4 @@
-package com.codepath.nytimessearch;
+package com.codepath.nytimessearch.fragments;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -7,9 +7,14 @@ import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.Toast;
+import android.widget.Spinner;
+
+import com.codepath.nytimessearch.R;
+import com.codepath.nytimessearch.models.Settings;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -17,6 +22,7 @@ import java.util.Locale;
 
 public class SettingsFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
     EditText etDate;
+    Button btnSave;
 
     public SettingsFragment() {}
 
@@ -36,10 +42,25 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Toast.makeText(getActivity(), "OKKKKKKK", Toast.LENGTH_LONG).show();
-
                 DatePickerFragment newFragment = new DatePickerFragment();
+                newFragment.setTargetFragment(SettingsFragment.this, 300);
                 newFragment.show(getFragmentManager(), "datePicker");
+            }
+        });
+
+        btnSave = (Button) view.findViewById(R.id.btnSave);
+        btnSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                SettingsListener listener = (SettingsListener) getActivity();
+                Settings settings = new Settings();
+                settings.setBegin(etDate.getText().toString());
+                settings.setSort(((Spinner) getView().findViewById(R.id.spinner)).getSelectedItem().toString());
+                settings.setArts(((CheckBox) getView().findViewById(R.id.cbArts)).isChecked());
+                settings.setFashion(((CheckBox) getView().findViewById(R.id.cbFashion)).isChecked());
+                settings.setSports(((CheckBox) getView().findViewById(R.id.cbSports)).isChecked());
+                listener.onFinishEditDialog(settings);
+                dismiss();
             }
         });
         return view;
@@ -49,6 +70,24 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
     }
+
+    public interface SettingsListener {
+        void onFinishEditDialog(Settings settings);
+    }
+
+    /*public void onSubmit(View v) {
+        SettingsListener listener = (SettingsListener) getActivity();
+        listener.onFinishEditDialog(etDate.getText().toString());
+        dismiss();
+        Intent data = new Intent();
+        data.putExtra("begin", etDate.getText().toString());
+        data.putExtra("sort", ((Spinner) findViewById(R.id.spinner)).getSelectedItem().toString());
+        data.putExtra("arts", ((CheckBox) findViewById(R.id.cbArts)).isChecked());
+        data.putExtra("fashion", ((CheckBox) findViewById(R.id.cbFashion)).isChecked());
+        data.putExtra("sports", ((CheckBox) findViewById(R.id.cbSports)).isChecked());
+        setResult(RESULT_OK, data);
+        finish();
+    }*/
 
     // handle the date selected
     @Override

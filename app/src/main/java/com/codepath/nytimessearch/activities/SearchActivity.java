@@ -1,6 +1,5 @@
 package com.codepath.nytimessearch.activities;
 
-import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
@@ -17,15 +16,15 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.DatePicker;
 import android.widget.GridView;
 import android.widget.Toast;
 
-import com.codepath.nytimessearch.Article;
+import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
 import com.codepath.nytimessearch.EndlessScrollListener;
 import com.codepath.nytimessearch.R;
-import com.codepath.nytimessearch.SettingsFragment;
+import com.codepath.nytimessearch.fragments.SettingsFragment;
+import com.codepath.nytimessearch.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -39,15 +38,13 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.Locale;
 import java.util.Set;
 
 import cz.msebera.android.httpclient.Header;
 
-public class SearchActivity extends AppCompatActivity implements DatePickerDialog.OnDateSetListener {
+public class SearchActivity extends AppCompatActivity implements SettingsFragment.SettingsListener {
 
     GridView gvResults;
 
@@ -75,7 +72,7 @@ public class SearchActivity extends AppCompatActivity implements DatePickerDialo
         toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
             @Override
             public boolean onMenuItemClick(MenuItem item) {
-                showSettingsDialog();
+                if (item.getTitle().equals("Filter")) showSettingsDialog();
                 return true;
             }
         });
@@ -207,22 +204,13 @@ public class SearchActivity extends AppCompatActivity implements DatePickerDialo
         settingsFragment.show(fm, "fragment_settings");
     }
 
-    private final int REQUEST_CODE = 20;
-    public boolean openSettings(MenuItem item) {
-        Intent i = new Intent(SearchActivity.this, SettingsActivity.class);
-        startActivityForResult(i, REQUEST_CODE);
-        return true;
-    }
-
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (resultCode == RESULT_OK && requestCode == REQUEST_CODE) {
-            begin_date = convertDateFormat(data.getExtras().getString("begin"));
-            sort = data.getExtras().getString("sort");
-
-            if (data.getExtras().getBoolean("arts")) news_desk.add("\"arts\"");
-            if (data.getExtras().getBoolean("fashion")) news_desk.add("\"fashion\"");
-            if (data.getExtras().getBoolean("sports")) news_desk.add("\"sports\"");
-        }
+    @Override
+    public void onFinishEditDialog (Settings settings) {
+        begin_date = convertDateFormat(settings.getBegin());
+        sort = settings.getSort();
+        if (settings.getArts()) news_desk.add("\"arts\"");
+        if (settings.getFashion()) news_desk.add("\"fashion\"");
+        if (settings.getSports()) news_desk.add("\"sports\"");
     }
 
     public String convertDateFormat(String d) {
@@ -257,19 +245,4 @@ public class SearchActivity extends AppCompatActivity implements DatePickerDialo
         return false;
     }
 
-    // handle the date selected
-    @Override
-    public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
-        // store the values selected into a Calendar instance
-        final Calendar c = Calendar.getInstance();
-        c.set(Calendar.YEAR, year);
-        c.set(Calendar.MONTH, monthOfYear);
-        c.set(Calendar.DAY_OF_MONTH, dayOfMonth);
-        updateLabel(c);
-    }
-
-    public void updateLabel(Calendar c) {
-        String myFormat = "MM/dd/yyyy";
-        SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.US);
-    }
 }
