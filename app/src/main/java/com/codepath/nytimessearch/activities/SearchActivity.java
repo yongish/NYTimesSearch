@@ -1,6 +1,9 @@
 package com.codepath.nytimessearch.activities;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -13,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
@@ -26,6 +30,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -100,21 +105,26 @@ public class SearchActivity extends AppCompatActivity {
         // NYTimes API does not allow pagination beyond page 100, but this may change, so we do not
         // put any check for page number.
         params.add("page", String.valueOf(offset));
-        client.get(url, params, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
-                Log.d("DEBUG", response.toString());
-                JSONArray articleJsonResults = null;
 
-                try {
-                    articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                    adapter.addAll(Article.fromJSONArray(articleJsonResults));
-                    Log.d("DEBUG", articleJsonResults.toString());
-                } catch (JSONException e) {
-                    e.printStackTrace();
+        if (isNetworkAvailable() && isOnline()) {
+            client.get(url, params, new JsonHttpResponseHandler() {
+                @Override
+                public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
+                    Log.d("DEBUG", response.toString());
+                    JSONArray articleJsonResults = null;
+
+                    try {
+                        articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
+                        adapter.addAll(Article.fromJSONArray(articleJsonResults));
+                        Log.d("DEBUG", articleJsonResults.toString());
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
                 }
-            }
-        });
+            });
+        } else {
+            Toast.makeText(this, "Check your Internet connection", Toast.LENGTH_LONG).show();
+        }
     }
 
     @Override
@@ -191,4 +201,21 @@ public class SearchActivity extends AppCompatActivity {
         return newDateString;
     }
 
+    private Boolean isNetworkAvailable() {
+        ConnectivityManager connectivityManager
+                = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnectedOrConnecting();
+    }
+
+    public boolean isOnline() {
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            Process ipProcess = runtime.exec("/system/bin/ping -c 1 8.8.8.8");
+            int     exitValue = ipProcess.waitFor();
+            return (exitValue == 0);
+        } catch (IOException e)          { e.printStackTrace(); }
+        catch (InterruptedException e) { e.printStackTrace(); }
+        return false;
+    }
 }
