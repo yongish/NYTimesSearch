@@ -7,4 +7,7 @@
     <string name="title_activity_settings">SettingsActivity</string>
     <string name="title_activity_date">DateActivity</string>
     <string name="recency_prompt">Oldest</string>
+    <string name="arts">Arts</string>
+    <string name="fashion">Fashion &amp; Style</string>
+    <string name="sports">Sports</string>
 </resources>
