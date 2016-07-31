@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -22,6 +23,7 @@ import com.codepath.nytimessearch.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
 import com.codepath.nytimessearch.EndlessScrollListener;
 import com.codepath.nytimessearch.R;
+import com.codepath.nytimessearch.SettingsFragment;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -56,6 +58,8 @@ public class SearchActivity extends AppCompatActivity {
     String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     RequestParams params;
 
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,6 +67,14 @@ public class SearchActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         setupViews();
+
+        toolbar.setOnMenuItemClickListener(new Toolbar.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                showSettingsDialog();
+                return true;
+            }
+        });
     }
 
     public void setupViews() {
@@ -183,6 +195,12 @@ public class SearchActivity extends AppCompatActivity {
         }
 
         customLoadMoreDataFromApi(0);
+    }
+
+    private void showSettingsDialog() {
+        FragmentManager fm = getSupportFragmentManager();
+        SettingsFragment settingsFragment = SettingsFragment.newInstance("Settings");
+        settingsFragment.show(fm, "fragment_settings");
     }
 
     private final int REQUEST_CODE = 20;
