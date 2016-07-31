@@ -96,12 +96,9 @@ public class SearchActivity extends AppCompatActivity {
         });
     }
 
-    // Append more data into the adapter
     public void customLoadMoreDataFromApi(int offset) {
-        // This method probably sends out a network request and appends new data items to your adapter.
-        // Use the offset value and add it as a parameter to your API request to retrieve paginated data.
-        // Deserialize API response and then construct new objects to append to the adapter
-
+        // NYTimes API does not allow pagination beyond page 100, but this may change, so we do not
+        // put any check for page number.
         params.add("page", String.valueOf(offset));
         client.get(url, params, new JsonHttpResponseHandler() {
             @Override
@@ -144,9 +141,6 @@ public class SearchActivity extends AppCompatActivity {
 
     public void onArticleSearch(View view) {
         String query = etQuery.getText().toString();
-
-//        Toast.makeText(this, "Searching for" + query, Toast.LENGTH_LONG).show();
-
         params = new RequestParams();
         params.put("api-key", "034ea0fa1f7942099700467445e5c69f");
         params.put("page", 0);
