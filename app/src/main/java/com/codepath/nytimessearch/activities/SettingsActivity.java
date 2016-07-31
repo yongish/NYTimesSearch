@@ -40,7 +40,7 @@ public class SettingsActivity extends AppCompatActivity implements DatePickerDia
     // attach to an onclick handler to show the date picker
     public void showDatePickerDialog() {
         DatePickerFragment newFragment = new DatePickerFragment();
-        newFragment.show(getFragmentManager(), "datePicker");
+        newFragment.show(getSupportFragmentManager(), "datePicker");
     }
 
     // handle the date selected
