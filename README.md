@@ -47,13 +47,13 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-<img src='http://i.imgur.com/link/to/your/gif/file.gif' title='Video Walkthrough' width='' alt='Video Walkthrough' />
+![Video Walkthrough](NYTimesSearch.gif?raw=true "NYTimesSearch")
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
 ## Notes
 
-Describe any challenges encountered while building the app.
+Could not implement Data Binding. Followed the Codepath guide, but ActivityMainBinding class was not generated.
 
 ## Open-source libraries used
 
