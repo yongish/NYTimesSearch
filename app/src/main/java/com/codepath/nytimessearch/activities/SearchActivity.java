@@ -8,22 +8,23 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.Toast;
 
-import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.ArticleArrayAdapter;
-import com.codepath.nytimessearch.EndlessScrollListener;
+import com.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
+import com.codepath.nytimessearch.ItemClickSupport;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.fragments.SettingsFragment;
+import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.models.Settings;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
@@ -46,8 +47,6 @@ import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements SettingsFragment.SettingsListener {
 
-    GridView gvResults;
-
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
@@ -58,8 +57,6 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
     AsyncHttpClient client;
     String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
     RequestParams params;
-
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -80,16 +77,19 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
 
     public void setupViews() {
         client = new AsyncHttpClient();
-        gvResults = (GridView) findViewById(R.id.gvResults);
         articles = new ArrayList<>();
+        RecyclerView rvArticles = (RecyclerView) findViewById(R.id.rvArticles);
         adapter = new ArticleArrayAdapter(this, articles);
-        news_desk = new HashSet<>();
-        gvResults.setAdapter(adapter);
+        rvArticles.setAdapter(adapter);
 
-        // hook up listener for grid click
-        gvResults.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        StaggeredGridLayoutManager gridLayoutManager = new StaggeredGridLayoutManager(4, StaggeredGridLayoutManager.VERTICAL);
+        rvArticles.setLayoutManager(gridLayoutManager);
+
+        news_desk = new HashSet<>();
+
+        ItemClickSupport.addTo(rvArticles).setOnItemClickListener(new ItemClickSupport.OnItemClickListener() {
             @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            public void onItemClicked (RecyclerView recyclerView, int position, View v) {
                 // create an intent to display the article
                 Intent i = new Intent(getApplicationContext(), ArticleActivity.class);
                 // get the article to display
@@ -101,11 +101,10 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
             }
         });
 
-        gvResults.setOnScrollListener(new EndlessScrollListener() {
+        rvArticles.addOnScrollListener(new EndlessRecyclerViewScrollListener(gridLayoutManager) {
             @Override
-            public boolean onLoadMore(int page, int totalItemsCount) {
+            public void onLoadMore(int page, int totalItemsCount) {
                 customLoadMoreDataFromApi(page);
-                return true;
             }
         });
     }
@@ -124,7 +123,10 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
 
                     try {
                         articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
-                        adapter.addAll(Article.fromJSONArray(articleJsonResults));
+
+                        int curSize = adapter.getItemCount();
+                        articles.addAll(Article.fromJSONArray(articleJsonResults));
+                        adapter.notifyItemRangeInserted(curSize, articles.size());
                         Log.d("DEBUG", articleJsonResults.toString());
                     } catch (JSONException e) {
                         e.printStackTrace();
