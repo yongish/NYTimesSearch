@@ -20,8 +20,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.nytimessearch.ArticleArrayAdapter;
-import com.codepath.nytimessearch.EndlessRecyclerViewScrollListener;
-import com.codepath.nytimessearch.ItemClickSupport;
+import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
+import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.fragments.SettingsFragment;
 import com.codepath.nytimessearch.models.Article;
