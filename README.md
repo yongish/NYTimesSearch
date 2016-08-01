@@ -47,7 +47,7 @@ The following **additional** features are implemented:
 
 Here's a walkthrough of implemented user stories:
 
-![Video Walkthrough](NYTimesSearch.gif?raw=true "NYTimesSearch")
+![Video Walkthrough](video.gif?raw=true "video")
 
 GIF created with [LiceCap](http://www.cockos.com/licecap/).
 
