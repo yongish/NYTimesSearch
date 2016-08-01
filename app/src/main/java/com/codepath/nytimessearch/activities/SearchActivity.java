@@ -49,7 +49,6 @@ import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements SettingsFragment.SettingsListener {
-
     ArrayList<Article> articles;
     ArticleArrayAdapter adapter;
 
