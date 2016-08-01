@@ -66,6 +66,10 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
 
+        begin_date = "";
+        sort = "";
+        news_desk = new HashSet<>();
+
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setupViews();
@@ -198,7 +202,7 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
         if (sort.length() > 0) {
             params.put("sort", sort);
         }
-        if (news_desk != null && !news_desk.isEmpty()) {
+        if (!news_desk.isEmpty()) {
             String nd = TextUtils.join("%20", news_desk);
             params.put("fq", "news_desk:(" + nd + ")");
         }

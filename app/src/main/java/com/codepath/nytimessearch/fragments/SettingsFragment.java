@@ -28,7 +28,10 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
     @BindView(R.id.etDate) EditText etDate;
     @BindView(R.id.btnSave) Button btnSave;
     @BindView(R.id.spinner) Spinner spinner;
-    
+    @BindView(R.id.cbArts) CheckBox cbArts;
+    @BindView(R.id.cbFashion) CheckBox cbFashion;
+    @BindView(R.id.cbSports) CheckBox cbSports;
+
     private Unbinder unbinder;
 
     public SettingsFragment() {}
@@ -47,7 +50,6 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
         View view = inflater.inflate(R.layout.fragment_settings, container);
         unbinder = ButterKnife.bind(this, view);
 
-//        etDate = (EditText) view.findViewById(R.id.etDate);
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -57,7 +59,6 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
             }
         });
 
-//        btnSave = (Button) view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -65,9 +66,9 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
                 Settings settings = new Settings();
                 settings.setBegin(etDate.getText().toString());
                 settings.setSort((spinner).getSelectedItem().toString());
-                settings.setArts(((CheckBox) getView().findViewById(R.id.cbArts)).isChecked());
-                settings.setFashion(((CheckBox) getView().findViewById(R.id.cbFashion)).isChecked());
-                settings.setSports(((CheckBox) getView().findViewById(R.id.cbSports)).isChecked());
+                settings.setArts(cbArts.isChecked());
+                settings.setFashion(cbFashion.isChecked());
+                settings.setSports(cbSports.isChecked());
                 listener.onFinishEditDialog(settings);
                 dismiss();
             }

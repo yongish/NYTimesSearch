@@ -15,18 +15,22 @@ import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+
 public class ArticleArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
     public static class ViewHolder extends RecyclerView.ViewHolder {
-        public ImageView imageView;
-        public TextView tvTitle;
+        @BindView(R.id.ivImage) ImageView imageView;
+        @BindView(R.id.tvTitle) TextView tvTitle;
+//        public ImageView imageView;
+//        public TextView tvTitle;
 
         public ViewHolder(View articleView) {
             super(articleView);
-
-            imageView = (ImageView) articleView.findViewById(R.id.ivImage);
-            tvTitle = (TextView) articleView.findViewById(R.id.tvTitle);
-
+            ButterKnife.bind(this, articleView);
+//            imageView = (ImageView) articleView.findViewById(R.id.ivImage);
+//            tvTitle = (TextView) articleView.findViewById(R.id.tvTitle);
         }
     }
 
