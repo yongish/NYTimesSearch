@@ -20,12 +20,12 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codepath.nytimessearch.ArticleArrayAdapter;
-import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
-import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.codepath.nytimessearch.R;
 import com.codepath.nytimessearch.fragments.SettingsFragment;
 import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.models.Settings;
+import com.codepath.nytimessearch.utils.EndlessRecyclerViewScrollListener;
+import com.codepath.nytimessearch.utils.ItemClickSupport;
 import com.loopj.android.http.AsyncHttpClient;
 import com.loopj.android.http.JsonHttpResponseHandler;
 import com.loopj.android.http.RequestParams;
@@ -33,6 +33,7 @@ import com.loopj.android.http.RequestParams;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.parceler.Parcels;
 
 import java.io.IOException;
 import java.text.DateFormat;
@@ -103,7 +104,7 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
                 // get the article to display
                 Article article = articles.get(position);
                 // pass in that article into intent
-                i.putExtra("article", article);
+                i.putExtra("article", Parcels.wrap(article));
                 // launch the activity
                 startActivity(i);
             }

@@ -23,14 +23,10 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     public static class ViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.ivImage) ImageView imageView;
         @BindView(R.id.tvTitle) TextView tvTitle;
-//        public ImageView imageView;
-//        public TextView tvTitle;
 
         public ViewHolder(View articleView) {
             super(articleView);
             ButterKnife.bind(this, articleView);
-//            imageView = (ImageView) articleView.findViewById(R.id.ivImage);
-//            tvTitle = (TextView) articleView.findViewById(R.id.tvTitle);
         }
     }
 
