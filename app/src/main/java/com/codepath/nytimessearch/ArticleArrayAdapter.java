@@ -8,10 +8,10 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.codepath.nytimessearch.models.Article;
 import com.codepath.nytimessearch.utils.ViewHolderNoImage;
 import com.codepath.nytimessearch.utils.ViewHolderWithImage;
-import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -94,7 +94,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
 
     private void configureDefaultViewHolder(ViewHolder vh, int position) {
         vh.tvTitle.setText(mArticles.get(position).getHeadline());
-        Picasso.with(getContext()).load(mArticles.get(position).getThumbNail()).into(vh.imageView);
+        Glide.with(getContext()).load(mArticles.get(position).getThumbNail()).into(vh.imageView);
     }
 
     private void configureViewHolderNoImage(ViewHolderNoImage vh1, int position) {
@@ -105,7 +105,7 @@ public class ArticleArrayAdapter extends RecyclerView.Adapter<RecyclerView.ViewH
     private void configureViewHolderWithImage(ViewHolderWithImage vh2, int position) {
         Article article = mArticles.get(position);
         vh2.getTvTitle().setText(article.getHeadline());
-        Picasso.with(getContext()).load(article.getThumbNail()).into(vh2.getIvImage());
+        Glide.with(getContext()).load(article.getThumbNail()).into(vh2.getIvImage());
     }
 
     private Context getContext() {
