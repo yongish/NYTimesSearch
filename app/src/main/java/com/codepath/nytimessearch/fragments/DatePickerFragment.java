@@ -17,8 +17,6 @@ public class DatePickerFragment extends DialogFragment {
 
         // Activity needs to implement this interface
         DatePickerDialog.OnDateSetListener listener = (DatePickerDialog.OnDateSetListener) getTargetFragment();
-//        DatePickerDialog.OnDateSetListener listener = (DatePickerDialog.OnDateSetListener) getParentFragment();
-//        DatePickerDialog.OnDateSetListener listener = (DatePickerDialog.OnDateSetListener) getActivity();
 
         // Create a new instance of TimePickerDialog and return it
         return new DatePickerDialog(getActivity(), listener, year, month, day);

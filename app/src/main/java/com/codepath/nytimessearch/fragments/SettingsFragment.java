@@ -20,9 +20,16 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
+import butterknife.Unbinder;
+
 public class SettingsFragment extends DialogFragment implements DatePickerDialog.OnDateSetListener {
-    EditText etDate;
-    Button btnSave;
+    @BindView(R.id.etDate) EditText etDate;
+    @BindView(R.id.btnSave) Button btnSave;
+    @BindView(R.id.spinner) Spinner spinner;
+    
+    private Unbinder unbinder;
 
     public SettingsFragment() {}
 
@@ -38,7 +45,9 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_settings, container);
-        etDate = (EditText) view.findViewById(R.id.etDate);
+        unbinder = ButterKnife.bind(this, view);
+
+//        etDate = (EditText) view.findViewById(R.id.etDate);
         etDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -48,14 +57,14 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
             }
         });
 
-        btnSave = (Button) view.findViewById(R.id.btnSave);
+//        btnSave = (Button) view.findViewById(R.id.btnSave);
         btnSave.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 SettingsListener listener = (SettingsListener) getActivity();
                 Settings settings = new Settings();
                 settings.setBegin(etDate.getText().toString());
-                settings.setSort(((Spinner) getView().findViewById(R.id.spinner)).getSelectedItem().toString());
+                settings.setSort((spinner).getSelectedItem().toString());
                 settings.setArts(((CheckBox) getView().findViewById(R.id.cbArts)).isChecked());
                 settings.setFashion(((CheckBox) getView().findViewById(R.id.cbFashion)).isChecked());
                 settings.setSports(((CheckBox) getView().findViewById(R.id.cbSports)).isChecked());
@@ -66,6 +75,11 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
         return view;
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        unbinder.unbind();
+    }
+
     @Override
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -74,20 +88,6 @@ public class SettingsFragment extends DialogFragment implements DatePickerDialog
     public interface SettingsListener {
         void onFinishEditDialog(Settings settings);
     }
-
-    /*public void onSubmit(View v) {
-        SettingsListener listener = (SettingsListener) getActivity();
-        listener.onFinishEditDialog(etDate.getText().toString());
-        dismiss();
-        Intent data = new Intent();
-        data.putExtra("begin", etDate.getText().toString());
-        data.putExtra("sort", ((Spinner) findViewById(R.id.spinner)).getSelectedItem().toString());
-        data.putExtra("arts", ((CheckBox) findViewById(R.id.cbArts)).isChecked());
-        data.putExtra("fashion", ((CheckBox) findViewById(R.id.cbFashion)).isChecked());
-        data.putExtra("sports", ((CheckBox) findViewById(R.id.cbSports)).isChecked());
-        setResult(RESULT_OK, data);
-        finish();
-    }*/
 
     // handle the date selected
     @Override

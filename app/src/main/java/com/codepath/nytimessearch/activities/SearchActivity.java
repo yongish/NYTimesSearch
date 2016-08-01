@@ -43,6 +43,8 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import cz.msebera.android.httpclient.Header;
 
 public class SearchActivity extends AppCompatActivity implements SettingsFragment.SettingsListener {
@@ -53,6 +55,7 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
     String begin_date;
     String sort;
     Set<String> news_desk;
+    @BindView(R.id.toolbar) Toolbar toolbar;
 
     AsyncHttpClient client;
     String url = "https://api.nytimes.com/svc/search/v2/articlesearch.json";
@@ -62,7 +65,8 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_search);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
+        ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setupViews();
 
@@ -112,6 +116,8 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
     public void customLoadMoreDataFromApi(int offset) {
         // NYTimes API does not allow pagination beyond page 100, but this may change, so we do not
         // put any check for page number.
+        String page = String.valueOf(offset);
+        if (offset > 0) params.remove("page");
         params.add("page", String.valueOf(offset));
 
         if (isNetworkAvailable() && isOnline()) {
@@ -119,7 +125,7 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
                 @Override
                 public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                     Log.d("DEBUG", response.toString());
-                    JSONArray articleJsonResults = null;
+                    JSONArray articleJsonResults;
 
                     try {
                         articleJsonResults = response.getJSONObject("response").getJSONArray("docs");
@@ -186,10 +192,10 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
         params.put("api-key", "034ea0fa1f7942099700467445e5c69f");
         params.put("page", 0);
         if (query.length() > 0) params.put("q", query);
-        if (begin_date != null) {
+        if (begin_date.length() > 0) {
             params.put("begin_date", begin_date);
         }
-        if (sort != null) {
+        if (sort.length() > 0) {
             params.put("sort", sort);
         }
         if (news_desk != null && !news_desk.isEmpty()) {
@@ -201,6 +207,10 @@ public class SearchActivity extends AppCompatActivity implements SettingsFragmen
     }
 
     private void showSettingsDialog() {
+        begin_date = "";    // Clear old filters.
+        sort = "";
+        news_desk = new HashSet<>();
+
         FragmentManager fm = getSupportFragmentManager();
         SettingsFragment settingsFragment = SettingsFragment.newInstance("Settings");
         settingsFragment.show(fm, "fragment_settings");
